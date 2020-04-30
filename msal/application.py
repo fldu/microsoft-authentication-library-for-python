@@ -56,7 +56,9 @@ CLIENT_REQUEST_ID = 'client-request-id'
 CLIENT_CURRENT_TELEMETRY = 'x-client-current-telemetry'
 
 def _get_new_correlation_id():
-    return str(uuid.uuid4())
+    cid = str(uuid.uuid4())
+    print(cid)
+    return cid
 
 
 def _build_current_telemetry_request_header(public_api_id, force_refresh=False):

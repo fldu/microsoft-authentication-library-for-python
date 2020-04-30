@@ -51,6 +51,8 @@ app = msal.ConfidentialClientApplication(
                        # https://msal-python.rtfd.io/en/latest/#msal.SerializableTokenCache
     )
 
+app.authority_groups = [set([])]  # A hack to disable authority alias detection
+
 # The pattern to acquire a token looks like this.
 result = None
 
@@ -66,11 +68,16 @@ if not result:
         })
 
 if "access_token" in result:
-    # Calling graph using the access token
-    graph_data = requests.get(  # Use token to call downstream service
-        config["endpoint"],
-        headers={'Authorization': 'Bearer ' + result['access_token']},).json()
-    print("Graph API call result: %s" % json.dumps(graph_data, indent=2))
+    print("Successfully obtained an access token")
+    if "endpoint" in config:
+        # Calling graph using the access token
+        graph_data = requests.get(  # Use token to call downstream service
+            config["endpoint"],
+            headers={'Authorization': 'Bearer ' + result['access_token']},).json()
+        print("Graph API call result: %s" % json.dumps(graph_data, indent=2))
+    else:
+        print(json.dumps(result, indent=2))
+        print(json.dumps(app.token_cache._cache, indent=4))
 
 else:
     print(result.get("error"))
