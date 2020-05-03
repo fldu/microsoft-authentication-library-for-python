@@ -96,7 +96,7 @@ class ClientApplication(object):
             token_cache=None,
             http_client=None,
             verify=True, proxies=None, timeout=None,
-            client_claims=None, app_name=None, app_version=None):
+            client_claims=None, app_name=None, app_version=None, user_agent=None):
         """Create an instance of application.
 
         :param str client_id: Your app has a client_id after you register it on AAD.
@@ -178,6 +178,8 @@ class ClientApplication(object):
         :param app_version: (optional)
             You can provide your application version for Microsoft telemetry purposes.
             Default value is None, means it will not be passed to Microsoft.
+        :param user_agent: (optional)
+            Override default user-agent
         """
         self.client_id = client_id
         self.client_credential = client_credential
@@ -194,6 +196,7 @@ class ClientApplication(object):
                 self.http_client.request, timeout=timeout)
         self.app_name = app_name
         self.app_version = app_version
+        self.user_agent = user_agent
         self.authority = Authority(
                 authority or "https://login.microsoftonline.com/common/",
                 self.http_client, validate_authority=validate_authority)
@@ -214,6 +217,8 @@ class ClientApplication(object):
             default_headers['x-app-name'] = self.app_name
         if self.app_version:
             default_headers['x-app-ver'] = self.app_version
+        if self.app_version:
+            default_headers['user-agent'] = self.user_agent
         default_body = {"client_info": 1}
         if isinstance(client_credential, dict):
             assert ("private_key" in client_credential
